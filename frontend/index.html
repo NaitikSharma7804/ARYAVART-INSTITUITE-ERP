@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vertex Academy — Coaching Management System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-aside">
+      <div>
+        <div class="brand-mark">Vertex Academy</div>
+        <h1>Run the whole coaching center from one place.</h1>
+        <p>Attendance, homework, tests, fees and reports — for students, parents, teachers and the front office.</p>
+      </div>
+      <div class="ledger-stat">
+        <div><div class="num">2,340</div><div class="lbl">Students</div></div>
+        <div><div class="num">86</div><div class="lbl">Teachers</div></div>
+        <div><div class="num">94%</div><div class="lbl">Avg. attendance</div></div>
+      </div>
+    </div>
+    <div class="login-main">
+      <h2>Sign in</h2>
+      <div class="sub">Choose your role to continue</div>
+      <div class="role-grid" id="role-grid">
+        <button class="role-btn active" data-role="student"><span class="icon">🎓</span><span class="name">Student</span><span class="desc">Classes, tests, homework</span></button>
+        <button class="role-btn" data-role="parent"><span class="icon">👪</span><span class="name">Parent</span><span class="desc">Track your child</span></button>
+        <button class="role-btn" data-role="teacher"><span class="icon">📋</span><span class="name">Teacher</span><span class="desc">Classes you teach</span></button>
+        <button class="role-btn" data-role="admin"><span class="icon">🏛️</span><span class="name">Admin</span><span class="desc">Front office & reports</span></button>
+      </div>
+      <div class="field">
+        <label>Phone or email</label>
+        <input id="login-id" type="text" placeholder="e.g. 98765 43210" value="98765 43210">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input id="login-pw" type="password" placeholder="••••••••" value="demo1234">
+      </div>
+      <button class="btn-primary" onclick="doLogin()">Continue as <span id="login-role-label">Student</span></button>
+      <div class="login-hint">Demo mode — any phone/password signs you in instantly.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="app-screen">
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="side-brand">
+        <div class="mark">VA</div>
+        <div class="txt"><strong>Vertex Academy</strong><span>Coaching OS</span></div>
+      </div>
+      <div class="role-pill" id="role-pill">Student Portal</div>
+      <nav class="nav-group" id="nav-group"></nav>
+      <div class="side-foot">
+        <button class="logout-btn" onclick="doLogout()"><span class="ic">⏻</span> Sign out</button>
+      </div>
+    </aside>
+
+    <div class="main">
+      <div class="topbar">
+        <div>
+          <h2 id="page-title">Dashboard</h2>
+          <div class="crumb" id="page-crumb">Welcome back</div>
+        </div>
+        <div class="top-right">
+          <div style="position:relative;">
+            <div class="bell" onclick="toggleNotif()">🔔<span class="dot"></span></div>
+            <div class="notif-dropdown" id="notif-dropdown">
+              <h4>Notifications</h4>
+              <div class="notif-item"><strong>Test result published</strong><span>Physics Unit Test 4 — scores are out</span></div>
+              <div class="notif-item"><strong>Fee reminder</strong><span>Installment 3 due in 5 days</span></div>
+              <div class="notif-item"><strong>Class rescheduled</strong><span>Chemistry moved to 4:00 PM today</span></div>
+              <div class="notif-item"><strong>New homework</strong><span>Organic Chemistry — Ch. 9 problems</span></div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div class="avatar" id="user-avatar">A</div>
+            <div class="user-meta"><strong id="user-name">Aarav Sharma</strong><span id="user-sub">Class 12 · Batch IIT-A</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="content" id="content"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ <span id="toast-text">Done</span></div>
+
+<script src="script.js"></script>
+</body>
+</html>
