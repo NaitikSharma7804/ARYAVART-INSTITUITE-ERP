@@ -2,18 +2,17 @@ const express = require("express");
 
 const router = express.Router();
 
-const authenticate = require("../middleware/authMiddleware");
+const auth = require("../middleware/authMiddleware");
+
+const authorize = require("../middleware/authorize");
 
 const controller = require("../controllers/dashboardController");
 
 router.get(
-
     "/stats",
-
-    authenticate,
-
-    controller.getStats
-
+    auth,
+    authorize("ADMIN"),
+    controller.getDashboard
 );
 
 module.exports = router;

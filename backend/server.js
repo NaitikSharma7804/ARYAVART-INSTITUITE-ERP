@@ -11,8 +11,17 @@ require("dotenv").config();
 require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
-const studentRoutes = require("./routes/studentRoutes");
 const classRoutes = require("./routes/classRoutes");
+
+const batchRoutes=require("./routes/batchRoutes");
+const teacherRoutes = require("./routes/teacherRoutes");
+const studentRoutes = require("./routes/studentRoutes");
+const subjectRoutes = require("./routes/subjectRoutes");
+const assignmentRoutes = require("./routes/assignmentRoutes");
+const timetableRoutes = require("./routes/timetableRoutes");
+const attendanceRoutes=require("./routes/attendanceRoutes");
+
+
 
 const app = express();
 
@@ -22,6 +31,15 @@ app.use(cors({
     origin: true,
     credentials: true
 }));
+app.use(
+
+"/api/batches",
+
+batchRoutes
+
+);
+
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -75,8 +93,20 @@ app.use(
 
 );
 
+app.use("/api/teachers", teacherRoutes);
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
     console.log(`🚀 Server Running on Port ${PORT}`);
 });
+
+app.use("/api/subjects", subjectRoutes);
+
+app.use("/api/assignments", assignmentRoutes);
+
+app.use("/api/timetable", timetableRoutes);
+
+app.use("/api/attendance", attendanceRoutes);
+
+

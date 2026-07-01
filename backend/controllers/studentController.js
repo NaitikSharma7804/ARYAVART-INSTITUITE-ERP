@@ -1,14 +1,14 @@
-const Student = require("../models/studentModel");
+const Student=require("../models/studentModel");
 
-const getStudents = async (req, res) => {
+const getStudents=async(req,res)=>{
 
-    try {
+    try{
 
-        const students = await Student.getAllStudents();
+        const students=await Student.getStudents();
 
         res.json({
 
-            success: true,
+            success:true,
 
             students
 
@@ -16,15 +16,13 @@ const getStudents = async (req, res) => {
 
     }
 
-    catch (err) {
+    catch(err){
 
         console.log(err);
 
         res.status(500).json({
 
-            success: false,
-
-            message: "Unable to fetch students"
+            success:false
 
         });
 
@@ -32,8 +30,42 @@ const getStudents = async (req, res) => {
 
 };
 
-module.exports = {
+const addStudent=async(req,res)=>{
 
-    getStudents
+    try{
+
+        await Student.addStudent(req.body);
+
+        res.json({
+
+            success:true,
+
+            message:"Student Added"
+
+        });
+
+    }
+
+    catch(err){
+
+        console.log(err);
+
+        res.status(500).json({
+
+            success:false,
+
+            message:"Unable to add student"
+
+        });
+
+    }
+
+};
+
+module.exports={
+
+    getStudents,
+
+    addStudent
 
 };

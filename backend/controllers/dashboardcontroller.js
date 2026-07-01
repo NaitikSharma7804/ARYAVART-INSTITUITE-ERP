@@ -1,17 +1,17 @@
 const Dashboard = require("../models/dashboardModel");
 
-const getStats = async (req, res) => {
+exports.getDashboard = async (req, res) => {
 
     try {
 
         const stats = await Dashboard.getStats();
 
+        const admissions = await Dashboard.getRecentAdmissions();
+
         res.json({
-
             success: true,
-
-            stats
-
+            stats,
+            admissions
         });
 
     }
@@ -21,19 +21,9 @@ const getStats = async (req, res) => {
         console.log(err);
 
         res.status(500).json({
-
-            success: false,
-
-            message: "Server Error"
-
+            success: false
         });
 
     }
-
-};
-
-module.exports = {
-
-    getStats
 
 };
