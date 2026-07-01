@@ -1,4 +1,5 @@
 
+
 /* ================= DATA ================= */
 const ROLE_META = {
   student:{label:"Student Portal", name:"Aarav Sharma", sub:"Class 12 · Batch IIT-A", initial:"A"},
@@ -32,34 +33,155 @@ const NAV = {
 };
 
 let state = { role:"student", section:"dashboard" };
+let currentSelectedRole = "student";
 
 /* ================= LOGIN ================= */
-document.querySelectorAll(".role-btn").forEach(btn=>{
-  btn.addEventListener("click", ()=>{
-    document.querySelectorAll(".role-btn").forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active");
-    const r = btn.dataset.role;
-    document.getElementById("login-role-label").textContent = r.charAt(0).toUpperCase()+r.slice(1);
-  });
+document.querySelectorAll(".role-btn").forEach(btn => {
+
+    btn.addEventListener("click", () => {
+
+        document
+            .querySelectorAll(".role-btn")
+            .forEach(b => b.classList.remove("active"));
+
+        btn.classList.add("active");
+
+        currentSelectedRole = btn.dataset.role;
+
+        document.getElementById("login-role-label").textContent =
+            currentSelectedRole.charAt(0).toUpperCase() +
+            currentSelectedRole.slice(1);
+
+    });
+
 });
 
-function doLogin(){
-  const active = document.querySelector(".role-btn.active");
-  state.role = active.dataset.role;
-  state.section = NAV[state.role][0][0];
-  const meta = ROLE_META[state.role];
-  document.getElementById("role-pill").textContent = meta.label;
-  document.getElementById("user-name").textContent = meta.name;
-  document.getElementById("user-sub").textContent = meta.sub;
-  document.getElementById("user-avatar").textContent = meta.initial;
-  document.getElementById("login-screen").style.display = "none";
-  document.getElementById("app-screen").style.display = "block";
-  buildNav();
-  renderSection();
+async function doLogin() {
+
+    const phone = document
+        .getElementById("login-id")
+        .value
+        .trim();
+
+    const password = document
+        .getElementById("login-pw")
+        .value;
+
+    if (!phone || !password) {
+
+        showToast("Enter phone and password");
+
+        return;
+
+    }
+
+    try {
+
+        const result = await apiRequest(
+    "/auth/login",
+    "POST",
+    {
+        phone,
+        password
+    }
+);
+
+const actualRole = result.user.role.toLowerCase();
+
+// Replace currentSelectedRole with the variable
+// your UI uses for the selected card.
+if (currentSelectedRole !== actualRole) {
+
+    showToast("Selected role doesn't match your account.");
+
+    return;
+
 }
+
+localStorage.setItem("token", result.token);
+
+localStorage.setItem("user", JSON.stringify(result.user));
+
+state.role = actualRole;
+
+state.section = NAV[state.role][0][0];
+
+document.getElementById("login-screen").style.display = "none";
+
+document.getElementById("app-screen").style.display = "block";
+
+document.getElementById("user-name").textContent =
+    result.user.name;
+
+document.getElementById("user-sub").textContent =
+    result.user.role;
+
+document.getElementById("user-avatar").textContent =
+    result.user.name.charAt(0);
+
+document.getElementById("role-pill").textContent =
+    ROLE_META[state.role].label;
+
+buildNav();
+
+renderSection();
+
+loadDashboardStats();
+
+showToast("Welcome " + result.user.name);
+
+} catch (error) {
+
+    showToast(error.message);
+
+}
+
+}
+
 function doLogout(){
-  document.getElementById("app-screen").style.display = "none";
-  document.getElementById("login-screen").style.display = "flex";
+
+    localStorage.removeItem("token");
+
+    localStorage.removeItem("user");
+
+    document.getElementById("app-screen").style.display="none";
+
+    document.getElementById("login-screen").style.display="flex";
+
+    showToast("Logged Out");
+
+}
+
+async function loadDashboardStats() {
+
+    try {
+
+        const result = await apiRequest("/dashboard/stats");
+
+        const stats = result.stats;
+
+        document.getElementById("studentCount").textContent =
+            stats.students;
+
+        document.getElementById("teacherCount").textContent =
+            stats.teachers;
+
+        document.getElementById("parentCount").textContent =
+            stats.parents;
+
+        document.getElementById("admissionCount").textContent =
+            stats.admissions;
+
+    }
+
+    catch(err){
+
+        console.error(err);
+
+        showToast("Unable to load dashboard");
+
+    }
+
 }
 
 function buildNav(){
@@ -584,4 +706,42 @@ function renderSection(){
   const key = state.role + "_" + state.section;
   const fn = renderers[key];
   document.getElementById("content").innerHTML = fn ? fn() : `<div class="card empty"><div class="ic">🚧</div><h3>Coming soon</h3></div>`;
+}
+
+window.onload = ()=>{
+
+    const token = localStorage.getItem("token");
+
+    const user = JSON.parse(
+
+        localStorage.getItem("user")
+
+    );
+
+    if(token && user){
+
+        state.role=user.role.toLowerCase();
+
+        state.section=NAV[state.role][0][0];
+
+        document.getElementById("login-screen").style.display="none";
+
+        document.getElementById("app-screen").style.display="block";
+
+        document.getElementById("user-name").textContent=user.name;
+
+        document.getElementById("user-sub").textContent=user.role;
+
+        document.getElementById("user-avatar").textContent=user.name.charAt(0);
+
+        document.getElementById("role-pill").textContent=ROLE_META[state.role].label;
+
+        buildNav();
+
+        renderSection();
+
+        loadDashboardStats();
+
+    }
+
 }
