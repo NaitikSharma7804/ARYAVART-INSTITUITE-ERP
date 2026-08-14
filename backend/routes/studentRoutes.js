@@ -7,6 +7,8 @@ const authenticate=require("../middleware/authMiddleware");
 const authorize=require("../middleware/authorize");
 
 const controller=require("../controllers/studentController");
+const studentController = require("../controllers/studentController");
+console.log("DEBUG: Controller content:", studentController);
 
 router.get(
 
@@ -31,5 +33,8 @@ authorize("ADMIN"),
 controller.addStudent
 
 );
+
+router.delete("/:id", studentController.deleteStudent);
+router.put("/:id", studentController.updateStudent);
 
 module.exports=router;

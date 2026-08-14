@@ -1,35 +1,25 @@
-const express=require("express");
+const express = require("express");
 
-const router=express.Router();
+const router = express.Router();
 
-const auth=require("../middleware/authMiddleware");
+const authenticate = require("../middleware/authMiddleware");
 
-const authorize=require("../middleware/authorize");
+const authorize = require("../middleware/authorize");
 
-const controller=require("../controllers/attendanceController");
+const controller = require("../controllers/attendanceController");
 
 router.get(
-
-"/class/:timetableId",
-
-auth,
-
-authorize("TEACHER","ADMIN"),
-
-controller.getClassStudents
-
+    "/class/:timetableId",
+    authenticate,
+    authorize("TEACHER"),
+    controller.getStudents
 );
 
 router.post(
-
-"/mark",
-
-auth,
-
-authorize("TEACHER","ADMIN"),
-
-controller.markAttendance
-
+    "/",
+    authenticate,
+    authorize("TEACHER"),
+    controller.markAttendance
 );
 
-module.exports=router;
+module.exports = router;

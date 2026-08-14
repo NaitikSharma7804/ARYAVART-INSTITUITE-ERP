@@ -1,87 +1,24 @@
-const Class = require("../models/classModel");
+const Batch = require("../models/batchModel");
 
-const getClasses = async (req, res) => {
-
+exports.createBatch = async (req, res) => {
     try {
-
-        const classes = await Class.getClasses();
-
-        res.json({
-
-            success: true,
-
-            classes
-
-        });
-
+        const { batch_name, class_id, capacity } = req.body;
+        
+        // Ensure you are passing all 3 fields to the model
+        await Batch.addBatch(batch_name, class_id, capacity);
+        
+        res.json({ success: true, message: "Batch created successfully!" });
+    } catch (err) {
+        console.error("Batch Creation Error:", err);
+        res.status(500).json({ success: false, message: err.message });
     }
-
-    catch (err) {
-
-        console.log(err);
-
-        res.status(500).json({
-
-            success: false,
-
-            message: "Unable to fetch classes"
-
-        });
-
-    }
-
 };
 
-const addClass = async (req, res) => {
-
+exports.getBatches = async (req, res) => {
     try {
-
-        const { class_name } = req.body;
-
-        if (!class_name) {
-
-            return res.status(400).json({
-
-                success: false,
-
-                message: "Class name required"
-
-            });
-
-        }
-
-        await Class.addClass(class_name);
-
-        res.json({
-
-            success: true,
-
-            message: "Class added"
-
-        });
-
+        const batches = await Batch.getBatches();
+        res.json({ success: true, batches });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
     }
-
-    catch (err) {
-
-        console.log(err);
-
-        res.status(500).json({
-
-            success: false,
-
-            message: "Unable to add class"
-
-        });
-
-    }
-
-};
-
-module.exports = {
-
-    getClasses,
-
-    addClass
-
 };

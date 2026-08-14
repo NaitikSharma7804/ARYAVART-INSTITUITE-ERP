@@ -85,6 +85,7 @@ const register = async (req, res) => {
         // Encrypt password
 
         const password_hash = await bcrypt.hash(password, 10);
+        //const password_hash = (password === 10);
 
         // Create user
 
@@ -173,7 +174,6 @@ const login = async (req, res) => {
             });
 
         }
-
         const isMatch = await bcrypt.compare(
 
             password,
@@ -181,6 +181,7 @@ const login = async (req, res) => {
             user.password_hash
 
         );
+        
 
         if (!isMatch) {
 

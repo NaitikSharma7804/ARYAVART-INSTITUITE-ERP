@@ -1,65 +1,63 @@
-const Attendance=require("../models/attendanceModel");
+const Attendance = require("../models/attendanceModel");
 
-exports.getClassStudents=async(req,res)=>{
+/*
+==========================================
+Get Students For Selected Lecture
+==========================================
+*/
 
-    try{
+exports.getStudents = async (req, res) => {
 
-        const students=await Attendance.getStudentsForClass(
+    try {
 
-            req.params.timetableId
+        const timetableId = req.params.timetableId;
 
+        const students = await Attendance.getStudentsForClass(
+            timetableId
         );
 
         res.json({
-
-            success:true,
-
+            success: true,
             students
-
         });
 
-    }
+    } catch (err) {
 
-    catch(err){
+        console.log(err);
 
         res.status(500).json({
-
-            success:false,
-
-            message:err.message
-
+            success: false,
+            message: err.message
         });
 
     }
 
 };
 
-exports.markAttendance=async(req,res)=>{
+/*
+==========================================
+Save Attendance
+==========================================
+*/
 
-    try{
+exports.markAttendance = async (req, res) => {
 
-        await Attendance.markAttendance(
+    try {
 
-            req.body
-
-        );
+        await Attendance.markAttendance(req.body);
 
         res.json({
-
-            success:true
-
+            success: true,
+            message: "Attendance Saved Successfully"
         });
 
-    }
+    } catch (err) {
 
-    catch(err){
+        console.log(err);
 
         res.status(500).json({
-
-            success:false,
-
-            message:err.message
-
+            success: false,
+            message: err.message
         });
 
     }
