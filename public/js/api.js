@@ -25,7 +25,16 @@ async function apiRequest(endpoint, method = "GET", body = null) {
 
     const response = await fetch(`${API_URL}${endpoint}`, options);
 
-    const data = await response.json();
+    let data;
+    const text = await response.text();
+    try {
+        data = JSON.parse(text);
+    } catch (e) {
+        if (!response.ok) {
+            throw new Error(`Server error (${response.status}). Please check backend logs or database connection.`);
+        }
+        throw new Error("Invalid response from server");
+    }
 
     if (!response.ok) {
         throw new Error(data.message || "Something went wrong");

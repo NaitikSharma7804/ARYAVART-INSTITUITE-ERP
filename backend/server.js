@@ -192,7 +192,23 @@ app.use("/api/admin", adminRoutes);
 
 app.use('/api/doubts', doubtRoutes);
 
-if (!process.env.VERCEL) {
+app.get("/api", (req, res) => {
+    res.json({
+        success: true,
+        message: "Aryavart Institute ERP API is running on Vercel!"
+    });
+});
+
+app.get("/api/health", (req, res) => {
+    res.json({
+        success: true,
+        status: "healthy",
+        hasDb: !!(process.env.DATABASE_URL || process.env.DB_HOST),
+        timestamp: new Date().toISOString()
+    });
+});
+
+if (require.main === module) {
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => {
         console.log(`🚀 Server Running on Port ${PORT}`);

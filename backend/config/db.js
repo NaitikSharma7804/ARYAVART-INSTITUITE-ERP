@@ -59,28 +59,20 @@ if (process.env.DATABASE_URL) {
 
 const pool = mysql.createPool(poolConfig);
 
-async function testConnection(){
+pool.on('error', (err) => {
+    console.error('MySQL Pool Error:', err.message);
+});
 
-    try{
-
-        const connection = await pool.getConnection();
-
-        console.log("✅ MySQL Connected Successfully");
-
-        connection.release();
-
-    }
-
-    catch(error){
-
-        console.log("❌ Database Connection Failed");
-
-        console.log(error.message);
-
-    }
-
+// Non-blocking connection test in development
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+    pool.getConnection()
+        .then(conn => {
+            console.log("✅ MySQL Connected Successfully");
+            conn.release();
+        })
+        .catch(err => {
+            console.log("❌ Database Connection Warning:", err.message);
+        });
 }
-
-testConnection();
 
 module.exports = pool;
