@@ -22,7 +22,7 @@ async function getAllTeachers() {
     return rows;
 }
 
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 async function createTeacher(data) {
 

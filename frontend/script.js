@@ -848,7 +848,7 @@ async function postHumanDoubt() {
     const question = document.getElementById('student-doubt-text').value;
     
     // Send to the simple controller, NOT an AI endpoint
-    const response = await fetch('http://localhost:5000/api/doubts/ask', { // Added 's' to doubt
+    const response = await fetch(`${API_URL}/doubts/ask`, { // Added 's' to doubt
     method: 'POST',
     headers: { 
         'Content-Type': 'application/json',
@@ -876,7 +876,7 @@ async function submitDoubt() {
     responseArea.innerText = "Aryavart AI is thinking...";
 
     try {
-        const response = await fetch('http://localhost:5000/api/doubt/ask', {
+        const response = await fetch(`${API_URL}/doubt/ask`, {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
@@ -915,7 +915,7 @@ async function askAI() {
     responseText.innerText = "Searching...";
 
     try {
-        const response = await fetch('http://localhost:5000/api/doubts/ai-ask', {
+        const response = await fetch(`${API_URL}/doubts/ai-ask`, {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
@@ -4500,7 +4500,7 @@ async function teacher_uploadnotes() {
 
                         <a
 
-                            href="http://localhost:5000${note.file_path}"
+                            href="${note.file_path.startsWith('http') ? note.file_path : (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : '') + note.file_path}"
 
                             target="_blank"
 
@@ -5033,7 +5033,7 @@ async function processDoubt() {
     responseText.innerText = "Analyzing institute knowledge base...";
 
     try {
-        const response = await fetch('http://localhost:5000/api/doubts/ask', { // Added 's' to doubt
+        const response = await fetch(`${API_URL}/doubts/ask`, { // Added 's' to doubt
     method: 'POST',
     headers: { 
         'Content-Type': 'application/json',

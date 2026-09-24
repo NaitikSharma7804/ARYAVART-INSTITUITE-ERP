@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const db = require("../config/db"); // Adjust path as needed
 const User = require("../models/userModel");
 

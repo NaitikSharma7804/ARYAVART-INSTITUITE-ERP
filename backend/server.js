@@ -1,4 +1,6 @@
-require('dotenv').config(); 
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, ".env") });
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
@@ -6,9 +8,8 @@ const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 
 const authenticate = require("./middleware/authMiddleware");
-const dashboardRoutes=require("./routes/dashboardRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
 
-require("dotenv").config();
 require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
@@ -23,7 +24,6 @@ const timetableRoutes = require("./routes/timetableRoutes");
 const attendanceRoutes=require("./routes/attendanceRoutes");
 const teacherDashboardRoutes=require("./routes/teacherDashboardRoutes");
 const homeworkRoutes = require("./routes/homeworkRoutes");
-const path = require("path");
 const notesRoutes = require("./routes/notesRoutes");
 const videoRoutes = require("./routes/videoRoutes");
 const testRoutes = require("./routes/testRoutes");
@@ -129,11 +129,6 @@ app.use(
 
 app.use("/api/teachers", teacherRoutes);
 
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-    console.log(`🚀 Server Running on Port ${PORT}`);
-});
 
 app.use("/api/subjects", subjectRoutes);
 
@@ -196,3 +191,12 @@ app.use("/api/admin", adminRoutes);
 
 
 app.use('/api/doubts', doubtRoutes);
+
+if (!process.env.VERCEL) {
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => {
+        console.log(`🚀 Server Running on Port ${PORT}`);
+    });
+}
+
+module.exports = app;
