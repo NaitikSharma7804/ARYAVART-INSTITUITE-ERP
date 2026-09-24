@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const adminController = require("../controllers/adminController");
-const authenticate = require("../middleware/authMiddleware");
-const authorize = require("../middleware/roleMiddleware");
+const authenticate = require("../middleware/authmiddleware");
+const authorize = require("../middleware/rolemiddleware");
 
 // Ensure the path here does NOT repeat '/api/admin' 
 // because you already added it in server.js

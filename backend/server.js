@@ -7,20 +7,20 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 
-const authenticate = require("./middleware/authMiddleware");
-const dashboardRoutes = require("./routes/dashboardRoutes");
+const authenticate = require("./middleware/authmiddleware");
+const dashboardRoutes = require("./routes/dashboardroutes");
 
 require("./config/db");
 
-const authRoutes = require("./routes/authRoutes");
-const classRoutes = require("./routes/classRoutes");
+const authRoutes = require("./routes/authroutes");
+const classRoutes = require("./routes/classroutes");
 
-const batchRoutes=require("./routes/batchRoutes");
-const teacherRoutes = require("./routes/teacherRoutes");
+const batchRoutes=require("./routes/batchroutes");
+const teacherRoutes = require("./routes/teacherroutes");
 const studentRoutes = require("./routes/studentRoutes");
-const subjectRoutes = require("./routes/subjectRoutes");
-const assignmentRoutes = require("./routes/assignmentRoutes");
-const timetableRoutes = require("./routes/timetableRoutes");
+const subjectRoutes = require("./routes/subjectroutes");
+const assignmentRoutes = require("./routes/assignmentroutes");
+const timetableRoutes = require("./routes/timetableroutes");
 const attendanceRoutes=require("./routes/attendanceRoutes");
 const teacherDashboardRoutes=require("./routes/teacherDashboardRoutes");
 const homeworkRoutes = require("./routes/homeworkRoutes");
@@ -40,7 +40,7 @@ const studentAttendanceRoutes = require("./routes/studentAttendanceRoutes");
 const studentNotesRoutes = require("./routes/studentNotesRoutes");
 const studentVideoRoutes = require("./routes/studentVideoRoutes");
 const testResultRoutes = require("./routes/testResultRoutes");
-const studentFeesRoutes = require("./routes/studentfeesroutes");
+const studentFeesRoutes = require("./routes/studentFeesRoutes");
 const studentDoubtRoutes = require("./routes/doubtRoutes")
 const doubtRoutes = require('./routes/doubtRoutes');
 const parentRoutes = require("./routes/parentRoutes");

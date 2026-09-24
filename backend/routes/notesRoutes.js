@@ -3,8 +3,8 @@ const router = express.Router();
 
 const controller = require("../controllers/notesController");
 
-const authenticate = require("../middleware/authMiddleware");
-const authorize = require("../middleware/roleMiddleware");
+const authenticate = require("../middleware/authmiddleware");
+const authorize = require("../middleware/rolemiddleware");
 
 const upload = require("../middleware/uploadNotes");
 

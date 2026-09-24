@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const authenticate = require("../middleware/authMiddleware");
+const authenticate = require("../middleware/authmiddleware");
 const authorize = require("../middleware/authorize");
-const controller = require("../controllers/classController");
+const controller = require("../controllers/classcontroller");
 
 // Define each route exactly once
 // routes/classRoutes.js

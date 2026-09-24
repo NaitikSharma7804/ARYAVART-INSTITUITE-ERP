@@ -4,9 +4,9 @@ const router = express.Router();
 
 const controller = require("../controllers/videoController");
 
-const authenticate = require("../middleware/authMiddleware");
+const authenticate = require("../middleware/authmiddleware");
 
-const authorize = require("../middleware/roleMiddleware");
+const authorize = require("../middleware/rolemiddleware");
 
 /*
 =====================================

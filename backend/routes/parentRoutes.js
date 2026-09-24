@@ -3,7 +3,7 @@ const router = express.Router();
 const parentController = require("../controllers/parentController");
 
 // Use destructuring to get the specific functions from the export object
-const authenticate = require("../middleware/authMiddleware");
+const authenticate = require("../middleware/authmiddleware");
 const authorize = require("../middleware/authorize");
 
 // Ensure no parentheses are used here

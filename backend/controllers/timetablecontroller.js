@@ -1,4 +1,4 @@
-const Timetable = require("../models/timetableModel");
+const Timetable = require("../models/timetablemodel");
 
 exports.getTimetable = async (req, res) => {
 

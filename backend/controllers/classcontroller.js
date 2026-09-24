@@ -1,4 +1,4 @@
-const Batch = require("../models/batchModel");
+const Batch = require("../models/batchmodel");
 
 exports.createBatch = async (req, res) => {
     try {

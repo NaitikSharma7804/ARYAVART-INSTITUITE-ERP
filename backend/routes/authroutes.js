@@ -8,7 +8,7 @@ const {
 
     login
 
-} = require("../controllers/authController");
+} = require("../controllers/authcontroller");
 
 /*
 ========================================

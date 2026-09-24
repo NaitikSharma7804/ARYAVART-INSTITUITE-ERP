@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const authenticate = require("../middleware/authMiddleware");
+const authenticate = require("../middleware/authmiddleware");
 const authorize = require("../middleware/authorize");
-const controller = require("../controllers/batchController");
+const controller = require("../controllers/batchcontroller");
 
 router.get("/", authenticate, authorize("ADMIN"), controller.getBatches);
 router.post("/", authenticate, authorize("ADMIN"), controller.createBatch);

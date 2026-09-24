@@ -1,4 +1,4 @@
-const Batch=require("../models/batchModel");
+const Batch=require("../models/batchmodel");
 
 const getBatches=async(req,res)=>{
 

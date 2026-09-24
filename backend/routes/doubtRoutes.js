@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const DoubtController = require('../controllers/DoubtController');
-const authenticate = require('../middleware/authMiddleware');
-const authorize = require('../middleware/roleMiddleware');
+const DoubtController = require("../controllers/doubtController");
+const authenticate = require("../middleware/authmiddleware");
+const authorize = require("../middleware/rolemiddleware");
 
 // Student Routes
 router.post('/ask', authenticate, DoubtController.askDoubt);

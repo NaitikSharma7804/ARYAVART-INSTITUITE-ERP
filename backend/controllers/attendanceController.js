@@ -1,4 +1,4 @@
-const Attendance = require("../models/attendanceModel");
+const Attendance = require("../models/attendancemodel");
 
 /*
 ==========================================

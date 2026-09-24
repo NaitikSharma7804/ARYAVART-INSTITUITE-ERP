@@ -4,9 +4,9 @@
 
 // const controller = require("../controllers/testController");
 
-// const authenticate = require("../middleware/authMiddleware");
+// const authenticate = require("../middleware/authmiddleware");
 
-// const authorize = require("../middleware/roleMiddleware");
+// const authorize = require("../middleware/rolemiddleware");
 
 // /*
 // =====================================
@@ -139,8 +139,8 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/testController");
-const authenticate = require("../middleware/authMiddleware");
-const authorize = require("../middleware/roleMiddleware");
+const authenticate = require("../middleware/authmiddleware");
+const authorize = require("../middleware/rolemiddleware");
 
 // Teacher Routes
 router.get("/options", authenticate, authorize("TEACHER"), controller.getOptions);

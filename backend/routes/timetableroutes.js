@@ -2,10 +2,10 @@ const express = require("express");
 
 const router = express.Router();
 
-const auth = require("../middleware/authMiddleware");
+const auth = require("../middleware/authmiddleware");
 const authorize = require("../middleware/authorize");
 
-const controller = require("../controllers/timetableController");
+const controller = require("../controllers/timetablecontroller");
 
 router.get(
     "/",
