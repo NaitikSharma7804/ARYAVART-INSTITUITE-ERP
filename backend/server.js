@@ -208,6 +208,15 @@ app.get("/api/health", (req, res) => {
     });
 });
 
+app.use((err, req, res, next) => {
+    console.error("Express Error:", err);
+    res.status(500).json({
+        success: false,
+        error: "Internal Server Error",
+        message: err.message || "An unexpected error occurred."
+    });
+});
+
 if (require.main === module) {
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => {
