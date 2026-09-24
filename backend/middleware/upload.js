@@ -4,17 +4,16 @@ const fs = require("fs");
 
 function createUploader(folder) {
 
-    const uploadPath = path.join(
-        __dirname,
-        "..",
-        "uploads",
-        folder
-    );
+    const uploadPath = process.env.VERCEL 
+        ? path.join("/tmp", folder)
+        : path.join(__dirname, "..", "uploads", folder);
 
-    if (!fs.existsSync(uploadPath)) {
-
-        fs.mkdirSync(uploadPath, { recursive: true });
-
+    try {
+        if (!fs.existsSync(uploadPath)) {
+            fs.mkdirSync(uploadPath, { recursive: true });
+        }
+    } catch (e) {
+        console.warn("Could not create uploadPath in read-only filesystem:", e.message);
     }
 
     const storage = multer.diskStorage({

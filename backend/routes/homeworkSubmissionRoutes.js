@@ -7,10 +7,14 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-// Ensure upload directory exists
-const uploadDir = path.join(__dirname, "../uploads/homework_submissions");
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
+// Ensure upload directory exists (use /tmp on serverless environments like Vercel)
+const uploadDir = process.env.VERCEL ? path.join("/tmp", "homework_submissions") : path.join(__dirname, "../uploads/homework_submissions");
+try {
+    if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+    }
+} catch (e) {
+    console.warn("Could not create uploadDir in read-only filesystem:", e.message);
 }
 
 // Multer Storage Configuration
