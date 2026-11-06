@@ -2,8 +2,11 @@ const db = require("../config/db");
 
 async function getStudentFees(userId) {
     // 1. Get student_id using the user_id
-    const [studentRows] = await db.query("SELECT student_id FROM students WHERE user_id = ?", [userId]);
-    if (studentRows.length === 0) throw new Error("Student not found");
+    let [studentRows] = await db.query("SELECT student_id FROM students WHERE user_id = ?", [userId]);
+    if (studentRows.length === 0) {
+        const [res] = await db.query("INSERT INTO students (user_id, admission_date) VALUES (?, CURDATE())", [userId]);
+        studentRows = [{ student_id: res.insertId }];
+    }
     const studentId = studentRows[0].student_id;
 
     // 2. Fetch all fee records for this student

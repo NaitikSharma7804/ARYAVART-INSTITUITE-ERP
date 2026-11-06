@@ -2,11 +2,14 @@ const db = require("../config/db");
 
 async function getStudentAttendance(userId) {
     // 1. Get the student's ID
-    const [studentRows] = await db.query(
+    let [studentRows] = await db.query(
         `SELECT student_id FROM students WHERE user_id = ?`, 
         [userId]
     );
-    if (studentRows.length === 0) throw new Error("Student profile not found");
+    if (studentRows.length === 0) {
+        const [res] = await db.query("INSERT INTO students (user_id, admission_date) VALUES (?, CURDATE())", [userId]);
+        studentRows = [{ student_id: res.insertId }];
+    }
     const studentId = studentRows[0].student_id;
 
     // 2. Calculate Stats

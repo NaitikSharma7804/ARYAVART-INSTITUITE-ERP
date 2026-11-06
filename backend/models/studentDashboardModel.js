@@ -2,12 +2,15 @@ const db = require("../config/db");
 
 async function getStudentDashboardData(userId) {
     // 1. Get the student's profile and batch
-    const [studentRows] = await db.query(
+    let [studentRows] = await db.query(
         `SELECT student_id, batch_id FROM students WHERE user_id = ?`, 
         [userId]
     );
     
-    if (studentRows.length === 0) throw new Error("Student profile not found");
+    if (studentRows.length === 0) {
+        const [res] = await db.query("INSERT INTO students (user_id, admission_date) VALUES (?, CURDATE())", [userId]);
+        studentRows = [{ student_id: res.insertId, batch_id: null }];
+    }
     const student = studentRows[0]; // 'student' contains student_id and batch_id
 
     // 2. Get Today's Timetable

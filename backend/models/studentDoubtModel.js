@@ -2,10 +2,11 @@ const db = require("../config/db");
 
 async function postDoubt(userId, question) {
     // 1. Get the student_id for this user
-    const [student] = await db.query("SELECT student_id FROM students WHERE user_id = ?", [userId]);
+    let [student] = await db.query("SELECT student_id FROM students WHERE user_id = ?", [userId]);
     
     if (student.length === 0) {
-        throw new Error("Student profile not found");
+        const [res] = await db.query("INSERT INTO students (user_id, admission_date) VALUES (?, CURDATE())", [userId]);
+        student = [{ student_id: res.insertId }];
     }
     
     // 2. Insert the doubt
