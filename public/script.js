@@ -51,119 +51,270 @@ const NAV = {
 let state = { role: "student", section: "dashboard" };
 let currentSelectedRole = "student";
 
-/* ================= LOGIN ================= */
-document.querySelectorAll(".role-btn").forEach(btn => {
+let currentAuthMode = "login";
+let googleClientId = "";
+let isGoogleInitialized = false;
 
-  btn.addEventListener("click", () => {
+/* ================= AUTHENTICATION & REGISTRATION ================= */
 
-    document
-      .querySelectorAll(".role-btn")
-      .forEach(b => b.classList.remove("active"));
+function setAuthMode(mode) {
+  currentAuthMode = mode;
+  const isLogin = mode === "login";
 
-    btn.classList.add("active");
+  const tabLogin = document.getElementById("tab-login");
+  const tabRegister = document.getElementById("tab-register");
+  if (tabLogin) tabLogin.classList.toggle("active", isLogin);
+  if (tabRegister) tabRegister.classList.toggle("active", !isLogin);
 
-    currentSelectedRole = btn.dataset.role;
+  const loginContainer = document.getElementById("login-form-container");
+  const registerContainer = document.getElementById("register-form-container");
+  if (loginContainer) loginContainer.style.display = isLogin ? "block" : "none";
+  if (registerContainer) registerContainer.style.display = isLogin ? "none" : "block";
 
-    document.getElementById("login-role-label").textContent =
-      currentSelectedRole.charAt(0).toUpperCase() +
-      currentSelectedRole.slice(1);
+  const authTitle = document.getElementById("auth-title");
+  const authSubtitle = document.getElementById("auth-subtitle");
+  if (authTitle) authTitle.textContent = isLogin ? "Sign In" : "Create Account";
+  if (authSubtitle) authSubtitle.textContent = isLogin
+    ? "Choose your role to continue"
+    : "Select your role and register";
 
+  const roleText = currentSelectedRole.charAt(0).toUpperCase() + currentSelectedRole.slice(1);
+  const loginRoleLabel = document.getElementById("login-role-label");
+  const registerRoleLabel = document.getElementById("register-role-label");
+  if (loginRoleLabel) loginRoleLabel.textContent = roleText;
+  if (registerRoleLabel) registerRoleLabel.textContent = roleText;
+
+  const googleBtnText = document.getElementById("google-btn-text");
+  if (googleBtnText) {
+    googleBtnText.textContent = isLogin
+      ? "Continue with Google"
+      : `Sign up with Google as ${roleText}`;
+  }
+
+  const dividerText = document.getElementById("auth-divider-text");
+  if (dividerText) {
+    dividerText.textContent = isLogin
+      ? "or with mobile number / email"
+      : "or register with mobile number";
+  }
+}
+
+function updateRoleSelection(role) {
+  currentSelectedRole = role.toLowerCase();
+
+  document.querySelectorAll(".role-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.role.toLowerCase() === currentSelectedRole);
   });
 
+  const roleText = currentSelectedRole.charAt(0).toUpperCase() + currentSelectedRole.slice(1);
+  const loginRoleLabel = document.getElementById("login-role-label");
+  const registerRoleLabel = document.getElementById("register-role-label");
+  if (loginRoleLabel) loginRoleLabel.textContent = roleText;
+  if (registerRoleLabel) registerRoleLabel.textContent = roleText;
+
+  const googleBtnText = document.getElementById("google-btn-text");
+  if (googleBtnText) {
+    googleBtnText.textContent = currentAuthMode === "login"
+      ? "Continue with Google"
+      : `Sign up with Google as ${roleText}`;
+  }
+}
+
+document.querySelectorAll(".role-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    updateRoleSelection(btn.dataset.role);
+  });
 });
 
+async function completeAuthentication(result) {
+  const actualRole = (result.user.role || "student").toLowerCase();
+
+  localStorage.setItem("token", result.token);
+  localStorage.setItem("user", JSON.stringify(result.user));
+
+  state.role = actualRole;
+  state.section = NAV[state.role] ? NAV[state.role][0][0] : "dashboard";
+
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("app-screen").style.display = "block";
+
+  const userName = result.user.name || result.user.full_name || "User";
+  document.getElementById("user-name").textContent = userName;
+  document.getElementById("user-sub").textContent = result.user.role || actualRole.toUpperCase();
+  document.getElementById("user-avatar").textContent = userName.charAt(0).toUpperCase();
+
+  const roleMeta = ROLE_META[state.role];
+  document.getElementById("role-pill").textContent = roleMeta ? roleMeta.label : (actualRole.toUpperCase() + " Portal");
+
+  buildNav();
+  await renderSection();
+  showToast("Welcome " + userName);
+}
+
 async function doLogin() {
+  const identifier = document.getElementById("login-id").value.trim();
+  const password = document.getElementById("login-pw").value;
 
-  const phone = document
-    .getElementById("login-id")
-    .value
-    .trim();
-
-  const password = document
-    .getElementById("login-pw")
-    .value;
-
-  if (!phone || !password) {
-
-    showToast("Enter phone and password");
-
+  if (!identifier || !password) {
+    showToast("Enter your mobile number or email, and password.");
     return;
-
   }
 
   try {
-
-    const result = await apiRequest(
-      "/auth/login",
-      "POST",
-      {
-        phone,
-        password
-      }
-    );
+    const result = await apiRequest("/auth/login", "POST", {
+      identifier,
+      password
+    });
 
     const actualRole = result.user.role.toLowerCase();
-
-    // Replace currentSelectedRole with the variable
-    // your UI uses for the selected card.
     if (currentSelectedRole !== actualRole) {
-
-      showToast("Selected role doesn't match your account.");
-
-      return;
-
+      currentSelectedRole = actualRole;
     }
 
-    localStorage.setItem("token", result.token);
-
-    localStorage.setItem("user", JSON.stringify(result.user));
-
-    state.role = actualRole;
-
-    state.section = NAV[state.role][0][0];
-
-    document.getElementById("login-screen").style.display = "none";
-
-    document.getElementById("app-screen").style.display = "block";
-
-    document.getElementById("user-name").textContent =
-      result.user.name;
-
-    document.getElementById("user-sub").textContent =
-      result.user.role;
-
-    document.getElementById("user-avatar").textContent =
-      result.user.name.charAt(0);
-
-    document.getElementById("role-pill").textContent =
-      ROLE_META[state.role].label;
-
-    buildNav();
-
-    await renderSection();
-
-    showToast("Welcome " + result.user.name);
-
+    await completeAuthentication(result);
   } catch (error) {
+    showToast(error.message || "Login failed");
+  }
+}
 
-    showToast(error.message);
+async function doRegister() {
+  const full_name = document.getElementById("register-name").value.trim();
+  const phone = document.getElementById("register-phone").value.trim();
+  const email = document.getElementById("register-email").value.trim();
+  const password = document.getElementById("register-pw").value;
+  const confirmPw = document.getElementById("register-pw-confirm").value;
+  const role = currentSelectedRole.toUpperCase();
 
+  if (!full_name) {
+    showToast("Please enter your full name.");
+    document.getElementById("register-name").focus();
+    return;
   }
 
+  const cleanPhone = phone.replace(/[\s\-\(\)]/g, "");
+  if (!cleanPhone || cleanPhone.length < 10) {
+    showToast("Please enter a valid 10-digit mobile number.");
+    document.getElementById("register-phone").focus();
+    return;
+  }
+
+  if (!password || password.length < 6) {
+    showToast("Password must be at least 6 characters long.");
+    document.getElementById("register-pw").focus();
+    return;
+  }
+
+  if (password !== confirmPw) {
+    showToast("Passwords do not match.");
+    document.getElementById("register-pw-confirm").focus();
+    return;
+  }
+
+  try {
+    const result = await apiRequest("/auth/register", "POST", {
+      full_name,
+      phone: cleanPhone,
+      email: email || undefined,
+      password,
+      role
+    });
+
+    await completeAuthentication(result);
+    showToast("Account created successfully!");
+  } catch (error) {
+    showToast(error.message || "Registration failed");
+  }
+}
+
+/* ================= GOOGLE AUTHENTICATION ================= */
+
+async function initGoogleAuth() {
+  try {
+    const config = await apiRequest("/auth/config", "GET");
+    if (config && config.googleClientId) {
+      googleClientId = config.googleClientId;
+    }
+  } catch (e) {
+    // Backend may not be running when page opens, ignore silently
+  }
+
+  if (googleClientId && window.google?.accounts?.id) {
+    try {
+      google.accounts.id.initialize({
+        client_id: googleClientId,
+        callback: handleGoogleAuthCallback,
+        auto_select: false
+      });
+
+      const gisContainer = document.getElementById("google-gis-container");
+      if (gisContainer) {
+        google.accounts.id.renderButton(gisContainer, {
+          theme: "outline",
+          size: "large",
+          width: 320,
+          text: currentAuthMode === "login" ? "signin_with" : "signup_with"
+        });
+      }
+      isGoogleInitialized = true;
+    } catch (err) {
+      console.warn("Google GIS init error:", err);
+    }
+  }
+}
+
+async function handleGoogleBtnClick() {
+  // If not loaded on initial page load, retry fetching config once
+  if (!googleClientId) {
+    try {
+      const config = await apiRequest("/auth/config", "GET");
+      if (config && config.googleClientId) {
+        googleClientId = config.googleClientId;
+        await initGoogleAuth();
+      }
+    } catch (e) {}
+  }
+
+  if (!googleClientId) {
+    showToast("Google Auth: Please configure GOOGLE_CLIENT_ID in your backend/.env (or Vercel)", true);
+    return;
+  }
+
+  if (window.google?.accounts?.id) {
+    const renderedBtn = document.querySelector("#google-gis-container div[role=button]");
+    if (renderedBtn) {
+      renderedBtn.click();
+    } else {
+      google.accounts.id.prompt();
+    }
+  } else {
+    showToast("Google Identity Services is loading. Please try again.", true);
+  }
+}
+
+async function handleGoogleAuthCallback(response) {
+  if (!response || !response.credential) {
+    showToast("Google authentication failed.");
+    return;
+  }
+
+  try {
+    const result = await apiRequest("/auth/google", "POST", {
+      credential: response.credential,
+      role: currentSelectedRole.toUpperCase()
+    });
+
+    await completeAuthentication(result);
+  } catch (err) {
+    showToast(err.message || "Google Authentication Error");
+  }
 }
 
 function doLogout() {
-
   localStorage.removeItem("token");
-
   localStorage.removeItem("user");
-
   document.getElementById("app-screen").style.display = "none";
-
   document.getElementById("login-screen").style.display = "flex";
-
   showToast("Logged Out");
-
 }
 
 async function loadDashboardStats() {
@@ -255,11 +406,20 @@ document.addEventListener("click", (e) => {
   }
 });
 
-function showToast(msg) {
+function showToast(msg, isError = false) {
   const t = document.getElementById("toast");
-  document.getElementById("toast-text").textContent = msg;
+  if (!t) return;
+  const isErr = isError || /error|failed|invalid|already|mismatch|required|please/i.test(msg);
+  const icon = isErr ? "⚠️" : "✓";
+  t.innerHTML = `${icon} <span id="toast-text">${msg}</span>`;
+  if (isErr) {
+    t.style.borderLeft = "4px solid #d9534f";
+  } else {
+    t.style.borderLeft = "4px solid #2f6f5e";
+  }
   t.classList.add("show");
-  setTimeout(() => t.classList.remove("show"), 2200);
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => t.classList.remove("show"), 3500);
 }
 
 
@@ -3888,6 +4048,23 @@ async function renderSection() {
 }
 
 window.onload = async () => {
+
+  // Initialize Google Sign-In SDK
+  initGoogleAuth();
+
+  // Setup Enter key shortcuts on authentication forms
+  const loginPw = document.getElementById("login-pw");
+  if (loginPw) {
+    loginPw.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") doLogin();
+    });
+  }
+  const regConfirmPw = document.getElementById("register-pw-confirm");
+  if (regConfirmPw) {
+    regConfirmPw.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") doRegister();
+    });
+  }
 
   const token = localStorage.getItem("token");
 
