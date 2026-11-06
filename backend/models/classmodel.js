@@ -14,7 +14,7 @@ async function getClasses() {
         LEFT JOIN students s
         ON c.class_id = s.class_id
 
-        GROUP BY c.class_id
+        GROUP BY c.class_id, c.class_name
 
         ORDER BY c.class_name`
 

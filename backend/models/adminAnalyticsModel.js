@@ -31,7 +31,7 @@ async function getAdminAnalytics() {
          JOIN students s ON st.student_id = s.student_id
          JOIN batches b ON s.batch_id = b.batch_id
          WHERE st.obtained_marks IS NOT NULL AND t.total_marks > 0
-         GROUP BY b.batch_id
+         GROUP BY b.batch_id, b.batch_name
          ORDER BY batch_avg DESC
          LIMIT 1`
     );

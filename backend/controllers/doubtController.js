@@ -1,10 +1,11 @@
 const db = require('../config/db');
-const Doubt = require("../models/studentDoubtModel"); // Keep this if you want to use the model
+const StudentDoubt = require("../models/studentDoubtModel");
+const DoubtModel = require("../models/doubtModel");
 
 // Unified exports that match your Route expectations
 exports.askDoubt = async (req, res) => {
     try {
-        await Doubt.postDoubt(req.user.id, req.body.question);
+        await StudentDoubt.postDoubt(req.user.id, req.body.question);
         res.json({ success: true, message: "Doubt posted successfully!" });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
@@ -13,7 +14,7 @@ exports.askDoubt = async (req, res) => {
 
 exports.getDoubts = async (req, res) => {
     try {
-        const doubts = await Doubt.getStudentDoubts(req.user.id);
+        const doubts = await StudentDoubt.getStudentDoubts(req.user.id);
         res.json({ success: true, doubts });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
@@ -25,7 +26,6 @@ const DoubtSolverService = require('../services/ai/DoubtSolverService');
 exports.askAI = async (req, res) => {
     const { question } = req.body;
     try {
-        // Calling the AI service logic
         const answer = await DoubtSolverService.solve(req.user.id, null, question);
         res.status(200).json({ success: true, answer: answer });
     } catch (error) {
@@ -33,6 +33,28 @@ exports.askAI = async (req, res) => {
         res.status(500).json({ success: false, message: "AI Engine error: " + error.message });
     }
 };
-// Add these if your teacher routes need them
-exports.getTeacherDoubts = async (req, res) => { /* implementation */ };
-exports.replyDoubt = async (req, res) => { /* implementation */ };
+
+// Teacher routes
+exports.getTeacherDoubts = async (req, res) => {
+    try {
+        const doubts = await DoubtModel.getTeacherDoubts(req.user.id);
+        res.json({ success: true, doubts: doubts || [] });
+    } catch (err) {
+        console.error("Get Teacher Doubts Error:", err);
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+exports.replyDoubt = async (req, res) => {
+    try {
+        const { answer } = req.body;
+        if (!answer || !answer.trim()) {
+            return res.status(400).json({ success: false, message: "Answer is required." });
+        }
+        await DoubtModel.replyToDoubt(req.params.id, answer.trim(), req.user.id);
+        res.json({ success: true, message: "Doubt replied successfully!" });
+    } catch (err) {
+        console.error("Reply Doubt Error:", err);
+        res.status(500).json({ success: false, message: err.message });
+    }
+};

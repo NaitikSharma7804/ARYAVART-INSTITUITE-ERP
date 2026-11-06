@@ -4040,7 +4040,21 @@ async function renderSection() {
     return;
   }
 
-  document.getElementById("content").innerHTML = await fn();
+  try {
+    const html = await fn();
+    if (html !== undefined) {
+      document.getElementById("content").innerHTML = html;
+    }
+  } catch (err) {
+    console.error(`Error rendering ${key}:`, err);
+    document.getElementById("content").innerHTML = `
+      <div class="card" style="border-left:4px solid #d9534f; margin-bottom:20px;">
+        <h3>⚠️ Unable to load section</h3>
+        <p style="color:var(--ink-soft); margin-top:8px;">${err.message || "An unexpected error occurred."}</p>
+        <button class="btn-sm secondary" style="margin-top:14px;" onclick="renderSection()">Retry</button>
+      </div>
+    `;
+  }
 
   if (key === "admin_dashboard") {
     loadDashboardStats();

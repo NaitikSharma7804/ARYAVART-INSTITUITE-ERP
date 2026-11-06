@@ -49,7 +49,7 @@ async function getTeacherAnalytics(userId) {
          JOIN batches b ON ts.batch_id = b.batch_id
          JOIN teachers tr ON ts.teacher_id = tr.teacher_id
          WHERE tr.user_id = ? AND st.obtained_marks IS NOT NULL
-         GROUP BY b.batch_id`, 
+         GROUP BY b.batch_id, b.batch_name`, 
         [userId]
     );
 

@@ -22,7 +22,7 @@ async function getAllBatches() {
         LEFT JOIN students s
         ON b.batch_id = s.batch_id
 
-        GROUP BY b.batch_id
+        GROUP BY b.batch_id, b.batch_name, b.room_no, b.start_time, b.end_time, c.class_name
 
         ORDER BY b.batch_name
 

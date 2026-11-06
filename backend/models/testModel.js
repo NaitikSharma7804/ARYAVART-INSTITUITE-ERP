@@ -51,15 +51,18 @@ async function deleteTest(testId, userId) {
 
 async function getTeacherTests(userId) {
     const [rows] = await db.query(
-        `SELECT t.*, s.subject_name, b.batch_name, COUNT(q.question_id) AS questions
+        `SELECT t.*, s.subject_name, b.batch_name, COALESCE(q.questions, 0) AS questions
          FROM tests t
          JOIN teacher_subject ts ON t.teacher_subject_id = ts.id
          JOIN teachers tr ON ts.teacher_id = tr.teacher_id
          JOIN subjects s ON ts.subject_id = s.subject_id
          JOIN batches b ON ts.batch_id = b.batch_id
-         LEFT JOIN test_questions q ON t.test_id = q.test_id
+         LEFT JOIN (
+             SELECT test_id, COUNT(*) AS questions 
+             FROM test_questions 
+             GROUP BY test_id
+         ) q ON t.test_id = q.test_id
          WHERE tr.user_id = ?
-         GROUP BY t.test_id
          ORDER BY t.created_at DESC`,
         [userId]
     );
